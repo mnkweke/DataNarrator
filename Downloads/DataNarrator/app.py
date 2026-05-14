@@ -10,7 +10,8 @@ st.set_page_config(page_title="DataNarrator", layout="centered")
 st.title("📊 DataNarrator")
 st.markdown("Upload a CSV or Excel file to preview your data and get AI-generated business insights.")
 
-groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+groq_api_key = os.getenv("GROQ_API_KEY") or st.secrets.get("GROQ_API_KEY")
+groq_client = Groq(api_key=groq_api_key)
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
@@ -126,8 +127,8 @@ if uploaded_file is not None:
             st.text(summary)
 
         if st.button("Generate Insights", type="primary"):
-            if not os.getenv("GROQ_API_KEY"):
-                st.warning("GROQ_API_KEY is not set in .env file.")
+            if not groq_api_key:
+                st.warning("GROQ_API_KEY is not set.")
             else:
                 with st.spinner("Generating insights..."):
                     insights = generate_insights(summary)
